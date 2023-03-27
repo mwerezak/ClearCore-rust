@@ -1,0 +1,15 @@
+[package]
+name = "clearcore-rust"
+version = "0.1.0"
+edition = "2021"
+authors = ["Mike Werezak"]
+description = "Wrapper and bindings for the ClearCore Motion and I/O Library provided by Teknic Inc."
+
+[lib]
+name = "clearcore"
+crate-type = ["staticlib"]
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.64"
