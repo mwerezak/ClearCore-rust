@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use bindgen;
 
 fn main() {
-    let output_path = "libClearCore_bindgen.rs";
+    let output_path = "libClearCore_bindings.rs";
     let header_dirs = [
         "headers/libClearCore",
         "headers/LwIP",
@@ -13,7 +13,7 @@ fn main() {
     ];
     let allowlist = [
         // Only create bindings for ClearCore, not it's include dependencies
-        "headers/libClearCore/\\w+\\.h"
+        ".*libClearCore.*\\.h",
     ];
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
@@ -21,6 +21,7 @@ fn main() {
 
     let mut bindopts = bindgen::Builder::default()
         .header("wrapper.hpp")
+
         // Use core instead of libstd in the generated bindings.
         .use_core()
         .ctypes_prefix("core::ffi");

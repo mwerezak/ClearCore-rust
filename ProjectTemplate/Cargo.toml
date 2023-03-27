@@ -1,0 +1,14 @@
+[package]
+name = "ProjectTemplate"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rustmain"
+path = "src/_main.rs"
+crate-type = ["staticlib"]
+
+[dependencies]
+clearcore-rust = { path = "../clearcore-rust", version = "0.1.0" }
+# uncomment to include the ATSAME53N peripheral access crate
+# atsamd-hal = { version = "0.15.1", features = ["same53n"] }

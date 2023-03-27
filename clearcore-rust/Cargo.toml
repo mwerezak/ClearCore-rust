@@ -7,7 +7,7 @@ description = "Wrapper and bindings for the ClearCore Motion and I/O Library pro
 
 [lib]
 name = "clearcore"
-crate-type = ["staticlib"]
+crate-type = ["rlib"]
 
 [dependencies]
 

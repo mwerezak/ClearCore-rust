@@ -1,5 +1,6 @@
 [workspace]
 
 members = [
-    "clearcore-rust"
+    "clearcore-rust",
+    "ProjectTemplate",
 ]
