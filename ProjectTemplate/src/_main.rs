@@ -5,6 +5,8 @@
 use core::ptr;
 use core::ffi;
 use clearcore::timing::delay_ms;
+
+// TODO replace with wrapper code when available
 use clearcore::bindings::{
     ClearCore_ConnectorLed, 
     ClearCore_LedDriver_State1,
