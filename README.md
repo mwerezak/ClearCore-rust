@@ -31,3 +31,5 @@ The workflow is more or less:
 2. Build the Rust code using `cargo build` or `cargo build --release`. This creates `rustmain.a` which supplies the `main()` method.
 3. Build the .atsln in Microchip Studio. This creates the actual firmware images (.elf, .bin, and .uf2 files).
 4. Use your desired tool (in Microchip Studio or using OpenOCD) to program the ClearCore.
+
+Debugging works pretty much the same as for a C/C++ project, except that Microchip Studio doesn't have syntax highlighting for Rust code. Alternatively you can use OpenOCD/gdb/gdbgui with the Atmel-ICE debugger which does have Rust syntax highlighting.
