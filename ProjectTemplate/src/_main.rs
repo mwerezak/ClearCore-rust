@@ -4,18 +4,11 @@
 
 use core::ptr;
 use core::ffi;
+use clearcore::timing::delay_ms;
 use clearcore::bindings::{
     ClearCore_ConnectorLed, 
     ClearCore_LedDriver_State1,
-    Delay_cycles,
-    CYCLES_PER_MILLISECOND,
 };
-
-#[inline]
-unsafe fn delay_ms(ms: u32) {
-    let cycles = (ms as u64).saturating_mul(CYCLES_PER_MILLISECOND.into());
-    Delay_cycles(cycles);
-}
 
 // main function - symbol should match the one declared in `Device_Startup/startup_same53.c`
 #[no_mangle]
@@ -32,12 +25,3 @@ pub extern "C" fn main() -> ffi::c_int {
         }
     }
 }
-
-// // Panic handler
-// use core::panic::PanicInfo;
-
-// #[panic_handler]
-// fn panic(_panic: &PanicInfo<'_>) -> ! {
-//     loop {}
-// }
-
