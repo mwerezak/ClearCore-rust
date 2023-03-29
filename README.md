@@ -3,9 +3,9 @@ This project is aimed at enabling the use of the Rust programming language to cr
 
 This project is built on top of the [project template](https://github.com/Teknic-Inc/ClearCore-library) provided by Teknic, instead of trying to reinvent the wheel (so that I can focus on making the ClearCore wrapper library). 
 
-Under construction is a safe-Rust wrapper around the ClearCore library to facilitate ClearCore development using Rust.  
-
 If needed, you can access peripherals or ATSAME53N functionality not exposed by the ClearCore library using the `atsame53n` peripheral access crate on [crates.io](https://crates.io/crates/atsame53n).
+
+Since the ClearCore library is open source, it should be possible to re-implement it in Rust on top of the `cortex-m` and `atsame53n` crates, and that probably would be the better approach long term. However I wanted to get up and running in Rust sooner.
 
 ## Requirements
 ### Rust
@@ -33,3 +33,7 @@ The workflow is more or less:
 4. Use your desired tool (in Microchip Studio or using OpenOCD) to program the ClearCore.
 
 Debugging works pretty much the same as for a C/C++ project, except that Microchip Studio doesn't have syntax highlighting for Rust code. Alternatively you can use OpenOCD/gdb/gdbgui with the Atmel-ICE debugger which does have Rust syntax highlighting.
+
+## TODO
+* Continue to build out the `clearcore` crate.
+* Figure out how to get Microchip Studio to invoke `cargo build` and create `rustmain.a` when hitting the build button.
