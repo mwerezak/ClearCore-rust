@@ -2,8 +2,30 @@
  *  
  */
 
+pub mod led_driver;
+
+use core::ptr;
 use crate::bindings;
 
+
+pub trait Connector {
+    fn is_in_hw_fault(&self) -> bool;
+    fn refresh(&mut self);
+    fn reinitialize(&mut self);
+}
+
+/*
+    Internal helper methods
+*/
+unsafe fn refresh_connector(connector: &mut bindings::ClearCore_Connector) {
+    let vmethod = (*connector.vtable_).ClearCore_Connector_Refresh;
+    vmethod(ptr::addr_of_mut!(*connector))
+}
+
+unsafe fn _is_in_hw_fault(connector: &mut bindings::ClearCore_Connector) -> bool {
+    let vmethod = (*connector.vtable_).ClearCore_Connector_IsInHwFault;
+    vmethod(ptr::addr_of_mut!(*connector))
+}
 
 /*
     Connector Mode enum

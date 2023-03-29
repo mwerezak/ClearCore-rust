@@ -12,6 +12,40 @@ pub mod timing;
 /// Raw bindings.
 pub mod bindings;
 
+use core::ptr;
+use connector::led_driver::LedDriver;
+
+
+/// Helper struct to ensure single access to static resources
+// pub struct Singleton<T> {
+//     instance: Option<T>,
+// }
+
+// impl<T> Singleton<T> {
+//     fn new(instance: T) -> Self {
+//         Self { instance: Some(instance) }
+//     }
+//     pub fn take(&mut self) -> Option<T> {
+//         self.instance.take()
+//     }
+// }
+
+
+/*
+    Connectors
+*/
+
+// TODO make this a singleton some how?
+
+/// User-driven LED instance.
+pub fn connector_led() -> LedDriver {
+    unsafe {
+        LedDriver::new(ptr::addr_of_mut!(bindings::ClearCore_ConnectorLed))
+    }
+}
+
+
+
 // Panic handler
 use core::panic::PanicInfo;
 

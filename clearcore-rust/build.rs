@@ -13,7 +13,12 @@ fn main() {
     ];
     let allowlist = [
         // Only create bindings for ClearCore, not it's include dependencies
-        ".*libClearCore.*\\.h",
+        "headers/libClearCore.*\\.h",
+    ];
+
+    // don't derive copy for these types
+    let no_copy = [
+        "ClearCore::Connector",
     ];
 
     // Tell cargo to invalidate the built crate whenever the wrapper changes
@@ -24,16 +29,25 @@ fn main() {
 
         // Use core instead of libstd in the generated bindings.
         .use_core()
-        .ctypes_prefix("core::ffi");
+        .ctypes_prefix("core::ffi")
+        .respect_cxx_access_specs(true)
 
-    for path in header_dirs.iter() {
-        bindopts = bindopts
-            .clang_arg("-I").clang_arg(*path);
+        .vtable_generation(true)
+        .generate_inline_functions(true)
+
+        .sort_semantically(true)
+        .merge_extern_blocks(true);
+
+    for dir in header_dirs.iter() {
+        bindopts = bindopts.clang_arg("-I").clang_arg(*dir);
     }
 
-    for pattern in allowlist.iter() {
-        bindopts = bindopts
-            .allowlist_file(*pattern);
+    for file_pat in allowlist.iter() {
+        bindopts = bindopts.allowlist_file(*file_pat);
+    }
+
+    for type_pat in no_copy.iter() {
+        bindopts = bindopts.no_copy(*type_pat);
     }
 
     let bindings = bindopts
