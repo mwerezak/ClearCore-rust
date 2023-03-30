@@ -62,6 +62,15 @@ impl ops::Not for LogicState {
     }
 }
 
+impl Into<bool> for LogicState {
+    fn into(self) -> bool {
+        match self {
+            LogicState::Low => false,
+            LogicState::High => true,
+        }
+    }
+}
+
 // Helper conversions to/from raw state
 impl LogicState {
     pub(crate) fn from_raw(state: i16) -> Self {
