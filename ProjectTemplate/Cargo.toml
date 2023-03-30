@@ -9,6 +9,6 @@ path = "src/_main.rs"
 crate-type = ["staticlib"]
 
 [dependencies]
-clearcore-rust = { path = "../clearcore-rust", version = "0.1.0" }
+clearcore-wrapper = { path = "../clearcore-wrapper", version = "0.1.0" }
 # uncomment to include the ATSAME53N peripheral access crate
 # atsamd-hal = { version = "0.15.1", features = ["same53n"] }

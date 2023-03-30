@@ -7,6 +7,8 @@ If needed, you can access peripherals or ATSAME53N functionality not exposed by 
 
 Since the ClearCore library is open source, it should be possible to re-implement it in Rust on top of the `cortex-m` and `atsame53n` crates, and that probably would be the better approach long term. However I wanted to get up and running in Rust sooner.
 
+*New:* Renamed the wrapper library to `clearcore-wrapper`. I want to try to create a pure-Rust implementation built on top of `cortex-m` and `atsame53n`, and it will be called `clearcore-rust`
+
 ## Requirements
 ### Rust
 To build the Rust firmware you will need to have the Rust target `thumbv7em-none-eabihf` installed (e.g. using `rustup`). 

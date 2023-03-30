@@ -4,6 +4,7 @@
 
 pub mod modes;
 pub mod led_driver;
+pub mod digital_inout;
 
 use core::ptr::NonNull;
 use crate::bindings;
