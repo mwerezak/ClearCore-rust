@@ -6,47 +6,50 @@
 
 #![no_std]
 
-pub mod connector;
-pub mod timing;
 
-/// Raw bindings.
 pub(crate) mod bindings;
 
-use core::ptr::{addr_of_mut, NonNull};
+pub mod timing;
+pub mod connector;
+
+
+use core::sync::atomic::{AtomicBool, Ordering};
 use connector::led_driver::LedDriver;
 
+macro_rules! define_singletons {
+    { $( $name:ident : $type:ty = $ctor:expr );* $(;)? } => {
+        $(
+            pub struct $name;
 
-/// Helper struct to ensure single access to static resources
-// pub struct Singleton<T> {
-//     instance: Option<T>,
-// }
-
-// impl<T> Singleton<T> {
-//     fn new(instance: T) -> Self {
-//         Self { instance: Some(instance) }
-//     }
-//     pub fn take(&mut self) -> Option<T> {
-//         self.instance.take()
-//     }
-// }
-
-
-/*
-    Connectors
-*/
-
-// TODO make this a singleton some how?
-
-/// User-driven LED instance.
-pub fn connector_led() -> LedDriver {
-    unsafe {
-        LedDriver::new(NonNull::new_unchecked(addr_of_mut!(bindings::ClearCore_ConnectorLed)))
-    }
+            impl $name {
+                pub fn instance() -> Option<$type> {
+                    static mut ONCE: AtomicBool = AtomicBool::new(false);
+                    unsafe {
+                        match ONCE.swap(false, Ordering::Acquire) {
+                            true  => Some($ctor),
+                            false => None,
+                        }
+                    }
+                }
+            }
+        )*
+    };
 }
 
 
+define_singletons! {
 
-// Panic handler
+    /*
+        Connectors
+    */
+    ConnectorLed: LedDriver = LedDriver::new(&mut bindings::ClearCore_ConnectorLed);
+
+}
+
+
+/*
+    Panic Handler
+*/
 use core::panic::PanicInfo;
 
 #[panic_handler]

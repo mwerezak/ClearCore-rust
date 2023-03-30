@@ -61,6 +61,9 @@ impl<T> Connector for T where T: ConnectorBase {
 #[derive(Debug, Clone, Copy)]
 struct _BasePtr(NonNull<bindings::ClearCore_Connector>);
 
+// Send but not Sync
+unsafe impl Send for _BasePtr { }
+
 impl _BasePtr {
     pub fn is_in_hw_fault(&self) -> bool {
         unsafe {

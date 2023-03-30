@@ -15,9 +15,14 @@ pub struct LedDriver {
     ptr: NonNull<bindings::ClearCore_LedDriver>,
 }
 
+// Send but not Sync
+unsafe impl Send for LedDriver { }
+
 impl LedDriver {
-    pub(crate) unsafe fn new(ptr: NonNull<bindings::ClearCore_LedDriver>) -> Self {
-        LedDriver { ptr }
+    pub(crate) unsafe fn new(connector: &mut bindings::ClearCore_LedDriver) -> Self {
+        LedDriver {
+            ptr: NonNull::new_unchecked(addr_of_mut!(*connector))
+        }
     }
 }
 
