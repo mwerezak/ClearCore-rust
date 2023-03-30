@@ -5,9 +5,28 @@
 use core::ops;
 
 
-/// Trait for digital input modes
+/// Trait for basic digital input
 pub trait InputDigital {
     fn read_state(&self) -> LogicState;
+}
+
+pub trait InputDigitalFiltered {
+    fn filter_length(&self) -> FilterLength;
+    fn set_filter_length(&mut self, filter_length: FilterLength);
+}
+
+pub trait InputDigitalEdge {
+    fn input_risen(&mut self) -> bool;
+    fn input_fallen(&mut self) -> bool;
+}
+
+pub trait InputDigitalISR {
+    fn register_isr<F>(
+        &mut self,
+        callback: extern "C" fn() -> (),
+        trigger: InterruptTrigger,
+        enable: bool,
+    );
 }
 
 pub trait InputAnalog {
@@ -15,10 +34,19 @@ pub trait InputAnalog {
     fn read_voltage(&self) -> f32;
 }
 
-/// Trait for digital output modes
+/// Trait for basic digital output
 pub trait OutputDigital {
     fn state(&self) -> LogicState;
     fn set_state(&mut self, state: LogicState);
+}
+
+pub trait OutputDigitalPulse {
+    fn start_pulses(&mut self, on_time: u32, off_time: u32, count: u16);
+    fn start_pulses_blocking(&mut self, on_time: u32, off_time: u32, count: u16);
+    fn start_pulses_forever(&mut self, on_time: u32, off_time: u32);
+    fn stop_pulses(&mut self);
+    fn stop_pulses_immediately(&mut self);
+    fn is_pulse_active(&self) -> bool;
 }
 
 pub trait OutputCurrent {
@@ -88,6 +116,12 @@ impl LogicState {
     }
 }
 
+/// Digital transition filter length
+#[derive(Debug, Clone, Copy)]
+pub enum FilterLength {
+    Milliseconds(u16),
+    Samples(u16),
+}
 
 /// Units for the filter time constant. 
 #[derive(Debug, Clone, Copy)]
@@ -97,6 +131,10 @@ pub enum FilterTC {
     Samples(u16),
 }
 
+#[derive(Debug, Clone, Copy)]
+pub enum InterruptTrigger {
+    None, Low, High, Chance, Falling, Rising,
+}
 
 #[derive(Debug, Clone)]
 pub struct TimedOpts {
