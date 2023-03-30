@@ -5,17 +5,17 @@
 use core::ops;
 
 
+/// Trait for digital input modes
 pub trait InputDigital {
     fn read_state(&self) -> LogicState;
 }
 
+/// Trait for digital output modes
 pub trait OutputDigital {
     fn state(&self) -> LogicState;
     fn set_state(&mut self, state: LogicState);
 }
 
-
-/// Enum representing digital logic states
 #[derive(Debug, Clone, Copy)]
 pub enum LogicState {
     Low,
