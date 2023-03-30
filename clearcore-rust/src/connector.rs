@@ -7,6 +7,8 @@ pub mod led_driver;
 
 use core::ptr::NonNull;
 use crate::bindings;
+
+// re-export connector I/O traits
 pub use modes::*;
 
 
@@ -21,6 +23,11 @@ pub trait Connector {
     fn connector_index(&self) -> ConnectorIndex;
     fn reg_mask(&self) -> u32;
 }
+
+
+/*
+    Blanket impl for Connector
+*/
 
 /// Marker trait for types with a `ClearCore_Connector` base pointer.
 /// Used to blanket impl the `Connector` trait
@@ -49,7 +56,6 @@ impl<T> Connector for T where T: ConnectorBase {
         _BasePtr(self.base_ptr()).reg_mask() 
     }
 }
-
 
 // Helper
 #[derive(Debug, Clone, Copy)]
