@@ -8,6 +8,11 @@ struct DigitalInOut {
     
 }
 
+// possible states
+struct DigitalInOut_Input {
+    inout: DigitalInOut,
+}
 
-struct DigitalInOut_Input {}
-struct DigitalInOut_Output {}
+struct DigitalInOut_Output {
+    inout: DigitalInOut,
+}
