@@ -2,30 +2,89 @@
  *  
  */
 
+pub mod modes;
 pub mod led_driver;
 
-use core::ptr;
+use core::ptr::NonNull;
 use crate::bindings;
+pub use modes::*;
 
 
+#[derive(Debug, Clone, Copy)]
+pub struct ConnectorIndex(i32);
+
+/// Trait for types that implement common connector methods
 pub trait Connector {
     fn is_in_hw_fault(&self) -> bool;
     fn refresh(&mut self);
     fn reinitialize(&mut self);
+    fn connector_index(&self) -> ConnectorIndex;
+    fn reg_mask(&self) -> u32;
 }
 
-/*
-    Internal helper methods
-*/
-unsafe fn refresh_connector(connector: &mut bindings::ClearCore_Connector) {
-    let vmethod = (*connector.vtable_).ClearCore_Connector_Refresh;
-    vmethod(ptr::addr_of_mut!(*connector))
+/// Marker trait for types with a `ClearCore_Connector` base pointer.
+/// Used to blanket impl the `Connector` trait
+trait ConnectorBase {
+    fn base_ptr(&self) -> NonNull<bindings::ClearCore_Connector>;
 }
 
-unsafe fn _is_in_hw_fault(connector: &mut bindings::ClearCore_Connector) -> bool {
-    let vmethod = (*connector.vtable_).ClearCore_Connector_IsInHwFault;
-    vmethod(ptr::addr_of_mut!(*connector))
+impl<T> Connector for T where T: ConnectorBase {
+    fn is_in_hw_fault(&self) -> bool {
+        _BasePtr(self.base_ptr()).is_in_hw_fault() 
+    }
+
+    fn refresh(&mut self) {
+        _BasePtr(self.base_ptr()).refresh() 
+    }
+
+    fn reinitialize(&mut self) {
+        _BasePtr(self.base_ptr()).reinitialize()
+    }
+
+    fn connector_index(&self) -> ConnectorIndex { 
+        ConnectorIndex(_BasePtr(self.base_ptr()).connector_index())
+    }
+
+    fn reg_mask(&self) -> u32 { 
+        _BasePtr(self.base_ptr()).reg_mask() 
+    }
 }
+
+
+// Helper
+#[derive(Debug, Clone, Copy)]
+struct _BasePtr(NonNull<bindings::ClearCore_Connector>);
+
+impl _BasePtr {
+    pub fn is_in_hw_fault(&self) -> bool {
+        unsafe {
+            let vmethod = (*self.0.as_ref().vtable_).ClearCore_Connector_IsInHwFault;
+            vmethod(self.0.as_ptr())
+        }
+    }
+    
+    pub fn refresh(&mut self) {
+        unsafe {
+            let vmethod = (*self.0.as_ref().vtable_).ClearCore_Connector_Refresh;
+            vmethod(self.0.as_ptr());
+        }
+    }
+    
+    pub fn reinitialize(&mut self) {
+        unsafe { (*self.0.as_ptr()).Reinitialize(); }
+    }
+    
+    pub fn connector_index(&self) -> i32 {
+        unsafe { (*self.0.as_ptr()).ConnectorIndex() }
+    }
+    
+    pub fn reg_mask(&self) -> u32 {
+        unsafe { (*self.0.as_ptr()).InputRegMask() }
+    }
+}
+
+
+// I'm not sure if the rest of this will ever be needed, but it's here...
 
 /*
     Connector Mode enum

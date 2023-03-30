@@ -2,52 +2,45 @@
  * 
  */
 
+use core::ptr::{NonNull, addr_of_mut};
+
 use crate::bindings;
-use crate::connector::{Connector, refresh_connector};
+use crate::connector::ConnectorBase;
+use crate::connector::modes::{OutputDigital, LogicState};
 
 
 /// Manages access to the LED shift register so LEDs may be controlled at the connector level.
+#[derive(Debug)]
 pub struct LedDriver {
-    ptr: *mut bindings::ClearCore_LedDriver,
+    ptr: NonNull<bindings::ClearCore_LedDriver>,
 }
 
 impl LedDriver {
-    pub(crate) fn new(ptr: *mut bindings::ClearCore_LedDriver) -> Self {
+    pub(crate) unsafe fn new(ptr: NonNull<bindings::ClearCore_LedDriver>) -> Self {
         LedDriver { ptr }
     }
-
-    pub fn state(&self) -> bool {
-        unsafe {
-            bindings::ClearCore_LedDriver_State(self.ptr as *mut _) != 0
-        }
-    }
-
-    pub fn set_state(&mut self, state: bool) {
-        unsafe {
-            bindings::ClearCore_LedDriver_State1(self.ptr as *mut _, state as _);
-        }
-    }
-
-    unsafe fn connector_mut(&self) -> &mut bindings::ClearCore_Connector {
-        &mut (*self.ptr)._base
-    }
 }
 
-impl Connector for LedDriver {
-    fn is_in_hw_fault(&self) -> bool {
-        unsafe {
-            bindings::ClearCore_LedDriver_IsInHwFault(self.ptr as *mut _)
-        }
+// LedDriver is just always in output mode
+impl OutputDigital for LedDriver {
+    fn state(&self) -> LogicState {
+        LogicState::from_raw(unsafe {
+            bindings::ClearCore_LedDriver_State(self.ptr.as_ptr() as _)
+        })
     }
-
-    fn refresh(&mut self) {
-        unsafe { refresh_connector(self.connector_mut()) }
-    }
-
-    fn reinitialize(&mut self) {
+    
+    fn set_state(&mut self, state: LogicState) {
         unsafe {
-            bindings::ClearCore_Connector_Reinitialize(self.ptr as *mut _)
+            bindings::ClearCore_LedDriver_State1(self.ptr.as_ptr() as _, state.into_raw());
         }
     }
 }
 
+impl ConnectorBase for LedDriver {
+    fn base_ptr(&self) -> NonNull<bindings::ClearCore_Connector> {
+        unsafe {
+            let base_ptr = addr_of_mut!((*self.ptr.as_ptr())._base);
+            NonNull::new_unchecked(base_ptr)
+        }
+    }
+}

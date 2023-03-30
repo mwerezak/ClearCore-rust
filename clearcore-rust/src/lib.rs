@@ -10,9 +10,9 @@ pub mod connector;
 pub mod timing;
 
 /// Raw bindings.
-pub mod bindings;
+pub(crate) mod bindings;
 
-use core::ptr;
+use core::ptr::{addr_of_mut, NonNull};
 use connector::led_driver::LedDriver;
 
 
@@ -40,7 +40,7 @@ use connector::led_driver::LedDriver;
 /// User-driven LED instance.
 pub fn connector_led() -> LedDriver {
     unsafe {
-        LedDriver::new(ptr::addr_of_mut!(bindings::ClearCore_ConnectorLed))
+        LedDriver::new(NonNull::new_unchecked(addr_of_mut!(bindings::ClearCore_ConnectorLed)))
     }
 }
 
