@@ -5,7 +5,7 @@
 use core::ptr::{NonNull, addr_of_mut};
 
 use crate::bindings;
-use crate::connector::ConnectorBase;
+use crate::connector::Connector;
 use crate::connector::modes::{OutputDigital, LogicState};
 
 
@@ -41,8 +41,8 @@ impl OutputDigital for LedDriver {
     }
 }
 
-impl ConnectorBase for LedDriver {
-    fn base_ptr(&self) -> NonNull<bindings::ClearCore_Connector> {
+impl Connector for LedDriver {
+    fn struct_ptr(&self) -> NonNull<bindings::ClearCore_Connector> {
         unsafe {
             let base_ptr = addr_of_mut!((*self.ptr.as_ptr())._base);
             NonNull::new_unchecked(base_ptr)

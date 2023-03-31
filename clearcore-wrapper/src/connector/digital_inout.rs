@@ -2,7 +2,7 @@
 use core::ptr::{addr_of_mut, NonNull};
 
 use crate::bindings;
-use crate::connector::ConnectorBase;
+use crate::connector::Connector;
 
 
 pub struct DigitalInOut {
@@ -16,13 +16,13 @@ impl DigitalInOut {
         }
     }
     
-    // pub fn into_input(self) -> DigitalInOut_Input;
-    // pub fn into_output(self) -> DigitalInOut_Output;
-    // pub fn into_pwm(self) -> DigitalInOut_PWM;
+    // pub fn as_input(&mut self) -> DigitalInOut_Input;
+    // pub fn as_output(&mut self) -> DigitalInOut_Output;
+    // pub fn as_pwm(&mut self) -> DigitalInOut_PWM;
 }
 
-impl ConnectorBase for DigitalInOut {
-    fn base_ptr(&self) -> NonNull<bindings::ClearCore_Connector> {
+impl Connector for DigitalInOut {
+    fn struct_ptr(&self) -> NonNull<bindings::ClearCore_Connector> {
         unsafe {
             let base_ptr = addr_of_mut!((*self.ptr.as_ptr())._base._base);
             NonNull::new_unchecked(base_ptr)
@@ -33,26 +33,15 @@ impl ConnectorBase for DigitalInOut {
 
 
 // possible states
-pub struct DigitalInOut_Input {
-    inout: DigitalInOut,
+pub struct DigitalInOut_Input<'a> {
+    connector: &'a mut DigitalInOut,
 }
 
-impl DigitalInOut_Input {
-    pub fn switch_mode(self) -> DigitalInOut { self.inout }
+pub struct DigitalInOut_Output<'a> {
+    connector: &'a mut DigitalInOut,
 }
 
-pub struct DigitalInOut_Output {
-    inout: DigitalInOut,
-}
 
-impl DigitalInOut_Output {
-    pub fn switch_mode(self) -> DigitalInOut { self.inout }
-}
-
-pub struct DigitalInOut_PWM {
-    inout: DigitalInOut,
-}
-
-impl DigitalInOut_PWM {
-    pub fn switch_mode(self) -> DigitalInOut { self.inout }
+pub struct DigitalInOut_PWM<'a> {
+    connector: &'a mut DigitalInOut,
 }
