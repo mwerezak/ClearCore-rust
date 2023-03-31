@@ -23,17 +23,13 @@ pub trait Connector {
 
     fn is_in_hw_fault(&self) -> bool {
         unsafe {
-            let vtable = self.struct_ptr().as_ref().vtable_;
-            let vmethod = (*vtable).ClearCore_Connector_IsInHwFault;
-            vmethod(self.struct_ptr().as_ptr())
+            bindings::vmethod_call!(ClearCore_Connector_IsInHwFault: self.struct_ptr())
         }
     }
 
     fn refresh(&mut self) {
         unsafe {
-            let vtable = self.struct_ptr().as_ref().vtable_;
-            let vmethod = (*vtable).ClearCore_Connector_Refresh;
-            vmethod(self.struct_ptr().as_ptr())
+            bindings::vmethod_call!(ClearCore_Connector_Refresh: self.struct_ptr())
         }
     }
 
@@ -55,3 +51,30 @@ pub trait Connector {
         }
     }
 }
+
+/// Helper trait for connectors that can change modes
+pub(crate) trait ConnectorModes: Connector {
+    fn connector_mode(&self) -> bindings::ConnectorMode {
+        unsafe {
+            bindings::vmethod_call!(ClearCore_Connector_Mode: self.struct_ptr())
+                .try_into().unwrap()
+        }
+    }
+
+    fn set_connector_mode(&mut self, mode: bindings::ConnectorMode) {
+        unsafe {
+            bindings::vmethod_call!(ClearCore_Connector_Mode1: self.struct_ptr(), mode.into());
+        }
+    }
+
+}
+
+
+// fn set_connector_mode()
+
+    // pub ClearCore_Connector_Mode:
+    //     unsafe extern "C" fn(this: *mut ClearCore_Connector) -> ClearCore_Connector_ConnectorModes,
+    // pub ClearCore_Connector_Mode1: unsafe extern "C" fn(
+    //     this: *mut ClearCore_Connector,
+    //     newMode: ClearCore_Connector_ConnectorModes,
+    // ) -> bool,

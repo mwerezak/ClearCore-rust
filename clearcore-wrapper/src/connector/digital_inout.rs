@@ -1,8 +1,8 @@
 
 use core::ptr::{addr_of_mut, NonNull};
 
-use crate::bindings;
-use crate::connector::Connector;
+use crate::bindings::{self, ConnectorMode};
+use crate::connector::{Connector, ConnectorModes};
 
 
 pub struct DigitalInOut {
@@ -16,9 +16,18 @@ impl DigitalInOut {
         }
     }
     
-    // pub fn as_input(&mut self) -> DigitalInOut_Input;
-    // pub fn as_output(&mut self) -> DigitalInOut_Output;
-    // pub fn as_pwm(&mut self) -> DigitalInOut_PWM;
+    pub fn as_input(&mut self) -> DigitalInOut_Input {
+        self.set_connector_mode(ConnectorMode::InputDigital);
+        DigitalInOut_Input(self)
+    }
+    pub fn as_output(&mut self) -> DigitalInOut_Output {
+        self.set_connector_mode(ConnectorMode::OutputDigital);
+        DigitalInOut_Output(self)
+    }
+    pub fn as_pwm(&mut self) -> DigitalInOut_PWM {
+        self.set_connector_mode(ConnectorMode::OutputPWM);
+        DigitalInOut_PWM(self)
+    }
 }
 
 impl Connector for DigitalInOut {
@@ -30,18 +39,15 @@ impl Connector for DigitalInOut {
     }
 }
 
+impl ConnectorModes for DigitalInOut { }
 
 
-// possible states
-pub struct DigitalInOut_Input<'a> {
-    connector: &'a mut DigitalInOut,
-}
+/*
+    Connector Modes
+*/
 
-pub struct DigitalInOut_Output<'a> {
-    connector: &'a mut DigitalInOut,
-}
+pub struct DigitalInOut_Input<'a>(&'a mut DigitalInOut);
 
+pub struct DigitalInOut_Output<'a>(&'a mut DigitalInOut);
 
-pub struct DigitalInOut_PWM<'a> {
-    connector: &'a mut DigitalInOut,
-}
+pub struct DigitalInOut_PWM<'a>(&'a mut DigitalInOut);
