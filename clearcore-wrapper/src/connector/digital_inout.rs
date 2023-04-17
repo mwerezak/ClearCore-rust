@@ -2,31 +2,45 @@
 use core::ptr::{addr_of_mut, NonNull};
 
 use crate::bindings::{self, ConnectorMode};
-use crate::connector::{Connector, ConnectorModes};
+use crate::connector::{
+    Connector,
+    ConnectorModeHelper,
+    InputDigital,
+    OutputDigital,
+    OutputPWM,
+};
+use crate::connector::modes::{
+    ModeState,
+    InputDigitalState,
+    OutputDigitalState,
+    OutputPWMState,
+}
 
 
-pub struct DigitalInOut {
+pub struct DigitalInOut<S: ModeState> {
     ptr: NonNull<bindings::ClearCore_DigitalInOut>,
 }
 
-impl DigitalInOut {
-    pub(crate) unsafe fn new(connector: &mut bindings::ClearCore_DigitalInOut) -> Self {
-        DigitalInOut {
+impl<S: ModeState> DigitalInOut<S> {
+    pub(crate) unsafe fn new(connector: &mut bindings::ClearCore_DigitalInOut) -> DigitalInOut::<Unconfigured> {
+        DigitalInOut::<Unconfigured> {
             ptr: NonNull::new_unchecked(addr_of_mut!(*connector))
         }
     }
     
-    pub fn as_input(&mut self) -> DigitalInOut_Input {
+    // change states
+
+    pub fn into_input(self) -> DigitalInOut<InputDigitalState> {
         self.set_connector_mode(ConnectorMode::InputDigital);
-        DigitalInOut_Input(self)
+        DigitalInOut::<InputDigitalState>(self)
     }
-    pub fn as_output(&mut self) -> DigitalInOut_Output {
+    pub fn into_output(self) -> DigitalInOut<OutputDigitalState> {
         self.set_connector_mode(ConnectorMode::OutputDigital);
-        DigitalInOut_Output(self)
+        DigitalInOut::<OutputDigitalState>(self)
     }
-    pub fn as_pwm(&mut self) -> DigitalInOut_PWM {
+    pub fn into_pwm(self) -> DigitalInOut<OutputPWMState> {
         self.set_connector_mode(ConnectorMode::OutputPWM);
-        DigitalInOut_PWM(self)
+        DigitalInOut::<OutputPWMState>(self)
     }
 }
 
@@ -39,15 +53,11 @@ impl Connector for DigitalInOut {
     }
 }
 
-impl ConnectorModes for DigitalInOut { }
+impl ConnectorModeHelper for DigitalInOut { }
 
 
-/*
-    Connector Modes
-*/
+// Implement I/O traits
 
-pub struct DigitalInOut_Input<'a>(&'a mut DigitalInOut);
-
-pub struct DigitalInOut_Output<'a>(&'a mut DigitalInOut);
-
-pub struct DigitalInOut_PWM<'a>(&'a mut DigitalInOut);
+// impl InputDigital for DigitalInOut<InputDigitalState> {}
+// impl OutputDigital for DigitalInOut<OutputDigitalState> {}
+// impl OutputPWM for DigitalInOut<OutputPWMState> {}

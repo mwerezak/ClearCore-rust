@@ -162,3 +162,34 @@ impl TimedOpts {
         self.force_duration = force; self
     }
 }
+
+
+// Marker structs
+
+trait ModeState { }
+
+struct Unconfigured;
+struct InputDigitalState;
+struct InputDigitalFilteredState;
+struct InputDigitalEdgeState;
+struct InputDigitalISRState;
+struct InputAnalogState;
+struct OutputDigitalState;
+struct OutputDigitalPulseState;
+struct OutputCurrentState;
+struct OutputPWMState;
+struct OutputHBridgeState;
+struct OutputToneState;
+
+impl ModeState for Unconfigured { }
+impl ModeState for InputDigitalState { }
+impl ModeState for InputDigitalFilteredState { }
+impl ModeState for InputDigitalEdgeState { }
+impl ModeState for InputDigitalISRState { }
+impl ModeState for InputAnalogState { }
+impl ModeState for OutputDigitalState { }
+impl ModeState for OutputDigitalPulseState { }
+impl ModeState for OutputCurrentState { }
+impl ModeState for OutputPWMState { }
+impl ModeState for OutputHBridgeState { }
+impl ModeState for OutputToneState { }

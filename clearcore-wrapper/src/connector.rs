@@ -10,7 +10,19 @@ use core::ptr::NonNull;
 use crate::bindings;
 
 // re-export connector I/O traits
-pub use modes::*;
+pub use modes::{
+    InputDigital,
+    InputDigitalFiltered,
+    InputDigitalEdge,
+    InputDigitalISR,
+    InputAnalog,
+    OutputDigital,
+    OutputDigitalPulse,
+    OutputCurrent,
+    OutputPWM,
+    OutputHBridge,
+    OutputTone,
+};
 
 
 #[derive(Debug, Clone, Copy)]
@@ -53,7 +65,7 @@ pub trait Connector {
 }
 
 /// Helper trait for connectors that can change modes
-pub(crate) trait ConnectorModes: Connector {
+pub(crate) trait ConnectorModeHelper: Connector {
     fn connector_mode(&self) -> bindings::ConnectorMode {
         unsafe {
             bindings::vmethod_call!(ClearCore_Connector_Mode: self.struct_ptr())
